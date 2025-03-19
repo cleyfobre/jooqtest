@@ -33,7 +33,7 @@ dependencies {
 
 	// db
 	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
-	runtimeOnly 'org.postgresql:postgresql'
+	runtimeOnly 'org.postgresql:postgresql:42.7.3'
 
 	// test
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
@@ -44,7 +44,7 @@ dependencies {
 	// JOOQ 의존성 추가
 	implementation 'org.springframework.boot:spring-boot-starter-jooq'
 
-	jooqGenerator 'org.postgresql:postgresql'
+	jooqGenerator 'org.postgresql:postgresql:42.7.3'
 	jooqGenerator "org.jooq:jooq:${jooqVersion}"
 	jooqGenerator "org.jooq:jooq-meta:${jooqVersion}"
 
@@ -76,7 +76,9 @@ jooq {
 						name = "org.jooq.meta.postgres.PostgresDatabase"
 						inputSchema = "public"  // 기본 스키마를 public으로 변경
 						includes = ".*"         // 모든 테이블 포함
-						excludes = "flyway_schema_history|spatial_ref_sys"  // 시스템 테이블 제외
+						// excludes = "flyway_schema_history|spatial_ref_sys"  // 시스템 테이블 제외
+						// includes = "product"         // product 테이블만 포함
+						// excludes = ""  // 
 					}
 
 					// 생성된 코드 옵션
@@ -95,6 +97,8 @@ jooq {
 						packageName = "com.example.jooqtest.generated"
 						// DSL 생성 위치를 build 디렉토리로 변경
 						directory = "build/generated-src/jooq/main"
+						// directory = layout.buildDirectory.dir("generated-src/jooq/main").get().asFile
+
 					}
 
 					// strategy {

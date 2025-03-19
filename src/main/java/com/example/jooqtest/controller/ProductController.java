@@ -31,7 +31,7 @@ public class ProductController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<ProductDto> getProductById(@PathVariable Long id) {
+    public ResponseEntity<ProductDto> getProductById(@PathVariable Integer id) {
         return productService.findById(id)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
@@ -43,19 +43,19 @@ public class ProductController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<ProductDto> updateProduct(@PathVariable Long id, @RequestBody ProductDto productDto) {
+    public ResponseEntity<ProductDto> updateProduct(@PathVariable Integer id, @RequestBody ProductDto productDto) {
         productDto.setId(id);
         return ResponseEntity.ok(productService.update(productDto));
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteProduct(@PathVariable Long id) {
+    public ResponseEntity<Void> deleteProduct(@PathVariable Integer id) {
         productService.delete(id);
         return ResponseEntity.noContent().build();
     }
     
     @PostMapping("/{id}/reduce-stock")
-    public ResponseEntity<ProductDto> reduceStock(@PathVariable Long id, @RequestParam int quantity) {
+    public ResponseEntity<ProductDto> reduceStock(@PathVariable Integer id, @RequestParam int quantity) {
         try {
             return ResponseEntity.ok(productService.reduceStock(id, quantity));
         } catch (IllegalArgumentException e) {

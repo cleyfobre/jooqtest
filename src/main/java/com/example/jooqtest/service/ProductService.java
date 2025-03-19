@@ -21,7 +21,7 @@ public class ProductService {
         return productRepository.findAll();
     }
 
-    public Optional<ProductDto> findById(Long id) {
+    public Optional<ProductDto> findById(Integer id) {
         return productRepository.findById(id);
     }
 
@@ -41,12 +41,12 @@ public class ProductService {
     }
 
     @Transactional
-    public void delete(Long id) {
+    public void delete(Integer id) {
         productRepository.delete(id);
     }
     
     @Transactional
-    public ProductDto reduceStock(Long id, int quantity) {
+    public ProductDto reduceStock(Integer id, int quantity) {
         ProductDto product = productRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Product not found"));
         

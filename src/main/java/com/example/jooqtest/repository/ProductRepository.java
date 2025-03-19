@@ -6,9 +6,12 @@ import java.util.Optional;
 import org.jooq.DSLContext;
 import org.springframework.stereotype.Repository;
 
+import com.example.jooqtest.generated.tables.records.ProductRecord;
 import com.example.jooqtest.model.ProductDto;
 
 import lombok.RequiredArgsConstructor;
+
+import static com.example.jooqtest.generated.tables.Product.PRODUCT;
 
 @Repository
 @RequiredArgsConstructor
@@ -17,57 +20,53 @@ public class ProductRepository {
     private final DSLContext dsl;
 
     public List<ProductDto> findAll() {
-        return null;
-        // return dsl.selectFrom(Product)
-        //         .fetch()
-        //         .map(this::mapToDto);
+        return dsl.selectFrom(PRODUCT)
+                .fetch()
+                .map(this::mapToDto);
     }
 
-    public Optional<ProductDto> findById(Long id) {
-        return null;
-        // return dsl.selectFrom(PRODUCT)
-        //         .where(PRODUCT.ID.eq(id))
-        //         .fetchOptional()
-        //         .map(this::mapToDto);
+    public Optional<ProductDto> findById(Integer id) {
+        return dsl.selectFrom(PRODUCT)
+                .where(PRODUCT.ID.eq(id))
+                .fetchOptional()
+                .map(this::mapToDto);
     }
 
     public ProductDto save(ProductDto productDto) {
-        return null;
-        // ProductRecord record = dsl.insertInto(PRODUCT)
-        //         .set(PRODUCT.NAME, productDto.getName())
-        //         .set(PRODUCT.STOCK, productDto.getStock())
-        //         .set(PRODUCT.VERSION, productDto.getVersion())
-        //         .returning()
-        //         .fetchOne();
+        ProductRecord record = dsl.insertInto(PRODUCT)
+                .set(PRODUCT.NAME, productDto.getName())
+                .set(PRODUCT.STOCK, productDto.getStock())
+                .set(PRODUCT.VERSION, productDto.getVersion())
+                .returning()
+                .fetchOne();
         
-        // return mapToDto(record);
+        return mapToDto(record);
     }
 
     public ProductDto update(ProductDto productDto) {
-        return null;
-        // ProductRecord record = dsl.update(PRODUCT)
-        //         .set(PRODUCT.NAME, productDto.getName())
-        //         .set(PRODUCT.STOCK, productDto.getStock())
-        //         .set(PRODUCT.VERSION, productDto.getVersion())
-        //         .where(PRODUCT.ID.eq(productDto.getId()))
-        //         .returning()
-        //         .fetchOne();
+        ProductRecord record = dsl.update(PRODUCT)
+                .set(PRODUCT.NAME, productDto.getName())
+                .set(PRODUCT.STOCK, productDto.getStock())
+                .set(PRODUCT.VERSION, productDto.getVersion())
+                .where(PRODUCT.ID.eq(productDto.getId()))
+                .returning()
+                .fetchOne();
         
-        // return mapToDto(record);
+        return mapToDto(record);
     }
 
-    public void delete(Long id) {
-        // dsl.deleteFrom(PRODUCT)
-        //         .where(PRODUCT.ID.eq(id))
-        //         .execute();
+    public void delete(Integer id) {
+        dsl.deleteFrom(PRODUCT)
+                .where(PRODUCT.ID.eq(id))
+                .execute();
     }
 
-    // private ProductDto mapToDto(ProductRecord record) {
-    //     return ProductDto.builder()
-    //             .id(record.getId())
-    //             .name(record.getName())
-    //             .stock(record.getStock())
-    //             .version(record.getVersion())
-    //             .build();
-    // }
+    private ProductDto mapToDto(ProductRecord record) {
+        return ProductDto.builder()
+                .id(record.getId())
+                .name(record.getName())
+                .stock(record.getStock())
+                .version(record.getVersion())
+                .build();
+    }
 }
