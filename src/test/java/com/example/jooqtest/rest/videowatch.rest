@@ -1,0 +1,12 @@
+### update videowatch
+POST http://localhost:8080/api/videowatch/update
+Content-Type: application/json
+
+{
+    "videoId": "d7dsf87sad789f",
+    "userId": 1,
+    "timestamp": 2800
+}
+
+### get videowatch
+GET  http://localhost:8080/api/videowatch/last?videoId=d7dsf87sad789f&userId=1

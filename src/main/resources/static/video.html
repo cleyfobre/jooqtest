@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>동영상 플레이어</title>
+    <style>
+        body {
+            display: flex;
+            flex-direction: column; /* 세로 정렬 */
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        video {
+            max-width: 80%;
+            max-height: 80%;
+            border: 1px solid #ccc; /* 비디오 영역에 테두리 추가 */
+            border-radius: 5px; /* 비디오 영역 모서리 둥글게 */
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* 비디오 영역에 그림자 효과 */
+        }
+
+        .button-container {
+            margin-top: 20px; /* 비디오와의 간격 조절 */
+            display: flex; /* 버튼들을 가로로 배치 */
+            gap: 15px; 
+            justify-content: center; /* 버튼들을 가운데 정렬 */
+        }
+
+        button {
+            padding: 10px 20px; /* 버튼 내부 여백 */
+            border: none; /* 테두리 제거 */
+            border-radius: 5px; /* 모서리 둥글게 */
+            background-color: #4CAF50; /* 배경색 */
+            color: white; /* 글자색 */
+            font-size: 16px; /* 글자 크기 */
+            cursor: pointer; /* 마우스 커서 변경 */
+            transition: background-color 0.3s ease; /* 배경색 변경 시 부드러운 효과 */
+        }
+
+        button:hover {
+            background-color: #45a049; /* 호버 시 배경색 변경 */
+        }
+    </style>
+</head>
+<body>
+    <video id="myVideo" controls autoplay muted>
+        <source src="https://d367r8asy41n9r.cloudfront.net/cloudfront_origin.mp4" type="video/mp4">
+        Your browser does not support the video tag.
+    </video>
+    <div class="button-container">
+        <button id="resetButton">초기화</button>
+        <button id="completeButton" disabled>이수</button>
+    </div>
+
+    <script>
+        const video = document.getElementById('myVideo');
+        const videoId = 'd7dsf87sad789f';
+        const userId = 1;
+        let lastTimestamp = 0;
+        const resetButton = document.getElementById('resetButton');
+        const completeButton = document.getElementById('completeButton');
+
+        // 최근 시청 시간 가져오기
+        async function getLastWatchTime() {
+            try {
+                const response = await fetch(`http://192.168.1.52:8080/api/videowatch/last?videoId=${videoId}&userId=${userId}`);
+                const data = await response.json();
+                if (data.success) {
+                    lastTimestamp = data.timestamp / 1000; // 밀리초를 초로 변환
+                    video.currentTime = lastTimestamp;
+                }
+            } catch (error) {
+                console.error('Error getting last watch time:', error);
+            }
+        }
+
+        // 시청 시간 업데이트
+        async function updateWatchTime(timestamp) {
+            try {
+                await fetch('http://192.168.1.52:8080/api/videowatch/update', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        videoId: videoId,
+                        userId: userId,
+                        timestamp: timestamp * 1000 // 초를 밀리초로 변환
+                    })
+                });
+            } catch (error) {
+                console.error('Error updating watch time:', error);
+            }
+        }
+
+        // 5초마다 시청 시간 업데이트
+        setInterval(() => {
+            if (video.currentTime !== lastTimestamp) {
+                updateWatchTime(video.currentTime);
+                lastTimestamp = video.currentTime;
+            }
+        }, 5000);
+
+        // 초기화
+        getLastWatchTime();
+
+        // 자동 재생 시도
+        video.play().catch(error => {
+            console.error('Autoplay failed:', error);
+            // 자동 재생 실패 시 사용자에게 재생 버튼을 표시하거나 다른 처리를 수행할 수 있습니다.
+        });
+
+        video.addEventListener('ended', () => {
+            completeButton.disabled = false; // '이수' 버튼 활성화
+            // 여기에 동영상 시청 완료 시 수행할 동작을 추가합니다.
+            // 예를 들어, 서버에 시청 완료 정보를 전송하거나,
+            // '이수' 버튼을 활성화하는 등의 동작을 수행할 수 있습니다.
+        });
+
+        // 초기화 버튼 클릭 이벤트 처리
+        resetButton.addEventListener('click', () => {
+            video.currentTime = 0;
+            lastTimestamp = 0;
+            updateWatchTime(0); // 서버에도 초기화된 시간 업데이트
+        });
+    </script>
+</body>
+</html>
